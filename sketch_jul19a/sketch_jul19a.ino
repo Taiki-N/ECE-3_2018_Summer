@@ -1,3 +1,5 @@
+#include "Controller.h"
+
 // Pins
 constexpr unsigned char leftMotorControlPin = 3;
 constexpr unsigned char rightMotorControlPin = 5;
@@ -10,6 +12,13 @@ constexpr unsigned char photoTranPin4 = A3;
 constexpr unsigned char rLedPin = 7;
 constexpr unsigned char gLedPin = 9;
 constexpr unsigned char bLedPin = 11;
+
+// Other constants
+constexpr unsigned char leftMotorPwmMax = 230;
+constexpr unsigned char rightMotorPwmMax = 255;
+
+
+double error(unsigned short, unsigned short, unsigned short);
 
 
 void setup()
@@ -26,16 +35,16 @@ void setup()
 	// pinMode(gLedPin, OUTPUT);
 	// pinMode(bLedPin, OUTPUT);
 
-	Serial.begin(9600);
+	//Serial.begin(9600);
 }
 
 void loop()
 {
-	unsigned char leftMotorPwm = 230;
-	unsigned char rightMotorPwm = 255;
+	unsigned char leftMotorPwm = leftMotorPwmMax;
+	unsigned char rightMotorPwm = rightMotorPwmMax;
 
 	// Sensors
-	short photoTran1 = analogRead(photoTranPin1);
+	unsigned short photoTran1 = analogRead(photoTranPin1);
 	Serial.println(photoTran1);
 
 	// PWM Control
@@ -60,4 +69,9 @@ void loop()
 		digitalWrite(bLedPin, HIGH);
 	}
 	//*/
+}
+
+double error(unsigned short, unsigned short, unsigned short)
+{
+	//
 }
