@@ -7,13 +7,24 @@ constexpr unsigned char photoTranPin2 = A1;
 constexpr unsigned char photoTranPin3 = A2;
 constexpr unsigned char photoTranPin4 = A3;
 
+constexpr unsigned char rLedPin = 7;
+constexpr unsigned char gLedPin = 9;
+constexpr unsigned char bLedPin = 11;
+
 
 void setup()
 {
+	// PWM
 	pinMode(leftMotorControlPin, OUTPUT);
 	pinMode(rightMotorControlPin, OUTPUT);
 
+	// Phototransistors
 	pinMode(photoTranPin1, INPUT);
+
+	// LEDs
+	// pinMode(rLedPin, OUTPUT);
+	// pinMode(gLedPin, OUTPUT);
+	// pinMode(bLedPin, OUTPUT);
 
 	Serial.begin(9600);
 }
@@ -30,4 +41,23 @@ void loop()
 	// PWM Control
 	analogWrite(leftMotorControlPin, leftMotorPwm);			// Left motor
 	analogWrite(rightMotorControlPin, rightMotorPwm);		// Right motor
+
+	// LED Indicators
+	/*
+	if (false) {
+		digitalWrite(rLedPin, HIGH);
+		digitalWrite(gLedPin, LOW);
+		digitalWrite(bLedPin, LOW);
+	}
+	else if (false) {
+		digitalWrite(rLedPin, LOW);
+		digitalWrite(gLedPin, HIGH);
+		digitalWrite(bLedPin, LOW);
+	}
+	else if (false) {
+		digitalWrite(rLedPin, LOW);
+		digitalWrite(gLedPin, LOW);
+		digitalWrite(bLedPin, HIGH);
+	}
+	//*/
 }
