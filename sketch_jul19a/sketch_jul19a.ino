@@ -1,13 +1,12 @@
 #include "Controller.h"
 
 // Pins
-constexpr unsigned char leftMotorControlPin = 3;
-constexpr unsigned char rightMotorControlPin = 5;
+constexpr unsigned char leftMotorControlPin = 5;
+constexpr unsigned char rightMotorControlPin = 3;
 
-constexpr unsigned char photoTranPin1 = A0;
-constexpr unsigned char photoTranPin2 = A1;
-constexpr unsigned char photoTranPin3 = A2;
-constexpr unsigned char photoTranPin4 = A3;
+constexpr unsigned char photoTranPin1 = A0;		// Right
+constexpr unsigned char photoTranPin2 = A1;		// Center
+constexpr unsigned char photoTranPin3 = A2;		// Left
 
 constexpr unsigned char rLedPin = 7;
 constexpr unsigned char gLedPin = 9;
@@ -29,13 +28,15 @@ void setup()
 
 	// Phototransistors
 	pinMode(photoTranPin1, INPUT);
+	pinMode(photoTranPin2, INPUT);
+	pinMode(photoTranPin3, INPUT);
 
 	// LEDs
 	// pinMode(rLedPin, OUTPUT);
 	// pinMode(gLedPin, OUTPUT);
 	// pinMode(bLedPin, OUTPUT);
 
-	//Serial.begin(9600);
+	Serial.begin(9600);
 }
 
 void loop()
@@ -45,7 +46,28 @@ void loop()
 
 	// Sensors
 	unsigned short photoTran1 = analogRead(photoTranPin1);
+	unsigned short photoTran2 = analogRead(photoTranPin2);
+	unsigned short photoTran3 = analogRead(photoTranPin3);
+
+
+// ------- Debug --------
+/*
+	Serial.print("PT1: ");
 	Serial.println(photoTran1);
+	Serial.print("PT2: ");
+	Serial.println(photoTran2);
+	Serial.print("PT3: ");
+	Serial.println(photoTran3);
+	Serial.println();
+//*/
+
+//*
+	unsigned short photoTranTest = analogRead(A5);
+	Serial.println(photoTranTest);
+//*/
+// ----------------------
+
+	delay(1000);
 
 	// PWM Control
 	analogWrite(leftMotorControlPin, leftMotorPwm);			// Left motor
