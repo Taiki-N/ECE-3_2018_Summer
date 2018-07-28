@@ -75,7 +75,7 @@ void loop()
 
 //*
 	unsigned short wheelTest = analogRead(rightWheelSensor);
-	Serial.println(wheelTest)
+	Serial.println(wheelTest);
 //*/
 
 	//delay(1000);
