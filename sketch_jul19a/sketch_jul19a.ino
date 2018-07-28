@@ -8,9 +8,9 @@ constexpr unsigned char photoTranPin1 = A0;		// Right
 constexpr unsigned char photoTranPin2 = A1;		// Center
 constexpr unsigned char photoTranPin3 = A2;		// Left
 
-constexpr unsigned char rLedPin = 7;
-constexpr unsigned char gLedPin = 9;
-constexpr unsigned char bLedPin = 11;
+constexpr unsigned char rLedPin = 6;			// Red
+constexpr unsigned char gLedPin = 11;			// Green
+constexpr unsigned char bLedPin = 7;			// Blue
 
 // Other constants
 constexpr unsigned char leftMotorPwmMax = 230;
@@ -51,17 +51,17 @@ void loop()
 
 
 // ------- Debug --------
-/*
-	Serial.print("PT1: ");
-	Serial.println(photoTran1);
+//*
+	//Serial.print("PT1: ");
+	//Serial.println(photoTran1);
 	Serial.print("PT2: ");
 	Serial.println(photoTran2);
-	Serial.print("PT3: ");
-	Serial.println(photoTran3);
-	Serial.println();
+	//Serial.print("PT3: ");
+	//Serial.println(photoTran3);
+	//Serial.println();
 //*/
 
-//*
+/*
 	unsigned short photoTranTest = analogRead(A5);
 	Serial.println(photoTranTest);
 //*/
