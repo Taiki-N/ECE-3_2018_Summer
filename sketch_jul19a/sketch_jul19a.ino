@@ -12,6 +12,9 @@ constexpr unsigned char rLedPin = 6;			// Red
 constexpr unsigned char gLedPin = 11;			// Green
 constexpr unsigned char bLedPin = 7;			// Blue
 
+constexpr unsigned char leftWheelSensor = A7;
+constexpr unsigned char rightWheelSensor = A6;
+
 // Other constants
 constexpr unsigned char leftMotorPwmMax = 230;
 constexpr unsigned char rightMotorPwmMax = 255;
@@ -26,15 +29,19 @@ void setup()
 	pinMode(leftMotorControlPin, OUTPUT);
 	pinMode(rightMotorControlPin, OUTPUT);
 
+	// LEDs
+	// pinMode(rLedPin, OUTPUT);
+	// pinMode(gLedPin, OUTPUT);
+	// pinMode(bLedPin, OUTPUT);
+
 	// Phototransistors
 	pinMode(photoTranPin1, INPUT);
 	pinMode(photoTranPin2, INPUT);
 	pinMode(photoTranPin3, INPUT);
 
-	// LEDs
-	// pinMode(rLedPin, OUTPUT);
-	// pinMode(gLedPin, OUTPUT);
-	// pinMode(bLedPin, OUTPUT);
+	// Wheel Speed Sensors
+	pinMode(leftWheelSensor, INPUT);
+	pinMode(rightWheelSensor, INPUT);
 
 	Serial.begin(9600);
 }
@@ -51,7 +58,7 @@ void loop()
 
 
 // ------- Debug --------
-//*
+/*
 	//Serial.print("PT1: ");
 	//Serial.println(photoTran1);
 	Serial.print("PT2: ");
@@ -65,9 +72,15 @@ void loop()
 	unsigned short photoTranTest = analogRead(A5);
 	Serial.println(photoTranTest);
 //*/
-// ----------------------
 
-	delay(1000);
+//*
+	unsigned short wheelTest = analogRead(rightWheelSensor);
+	Serial.println(wheelTest)
+//*/
+
+	//delay(1000);
+	delay(200);
+// ----------------------
 
 	// PWM Control
 	analogWrite(leftMotorControlPin, leftMotorPwm);			// Left motor
