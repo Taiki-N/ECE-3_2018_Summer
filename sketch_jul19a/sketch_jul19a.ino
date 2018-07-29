@@ -4,12 +4,12 @@
 constexpr unsigned char leftMotorControlPin = 5;
 constexpr unsigned char rightMotorControlPin = 3;
 
-constexpr unsigned char photoTranPin1 = A0;		// Right
-constexpr unsigned char photoTranPin2 = A1;		// Center
-constexpr unsigned char photoTranPin3 = A2;		// Left
+constexpr unsigned char photoTranPinLeft = A0;		// Right
+constexpr unsigned char photoTranPinCenter = A1;		// Center
+constexpr unsigned char photoTranPinRight = A2;		// Left
 
 constexpr unsigned char rLedPin = 6;			// Red
-constexpr unsigned char gLedPin = 11;			// Green
+constexpr unsigned char gLedPin = 8;			// Green
 constexpr unsigned char bLedPin = 7;			// Blue
 
 //constexpr unsigned char leftWheelSensor = A7;
@@ -33,20 +33,24 @@ void setup()
 	pinMode(rightMotorControlPin, OUTPUT);
 
 	// LEDs
-	// pinMode(rLedPin, OUTPUT);
-	// pinMode(gLedPin, OUTPUT);
-	// pinMode(bLedPin, OUTPUT);
+	pinMode(rLedPin, OUTPUT);
+	pinMode(gLedPin, OUTPUT);
+	pinMode(bLedPin, OUTPUT);
 
 	// Phototransistors
-	pinMode(photoTranPin1, INPUT);
-	pinMode(photoTranPin2, INPUT);
-	pinMode(photoTranPin3, INPUT);
+	pinMode(photoTranPinLeft, INPUT);
+	pinMode(photoTranPinCenter, INPUT);
+	pinMode(photoTranPinRight, INPUT);
 
 	// Wheel Speed Sensors
 	pinMode(leftWheelSensor, INPUT);
 	//pinMode(rightWheelSensor, INPUT);
 
 	Serial.begin(9600);
+
+	digitalWrite(rLedPin, HIGH);
+	digitalWrite(gLedPin, HIGH);
+	digitalWrite(bLedPin, HIGH);
 }
 
 void loop()
@@ -55,20 +59,20 @@ void loop()
 	unsigned char rightMotorPwm = rightMotorPwmMax;
 
 	// Sensors
-	unsigned short photoTran1 = analogRead(photoTranPin1);
-	unsigned short photoTran2 = analogRead(photoTranPin2);
-	unsigned short photoTran3 = analogRead(photoTranPin3);
+	unsigned short photoTranLeft = analogRead(photoTranPinLeft);
+	unsigned short photoTranCenter = analogRead(photoTranPinCenter);
+	unsigned short photoTranRight = analogRead(photoTranPinRight);
 
 
 // ------- Debug --------
-/*
-	//Serial.print("PT1: ");
-	//Serial.println(photoTran1);
-	Serial.print("PT2: ");
-	Serial.println(photoTran2);
-	//Serial.print("PT3: ");
-	//Serial.println(photoTran3);
-	//Serial.println();
+//*
+	Serial.print(photoTranLeft);
+	Serial.print(", ");
+	Serial.print(photoTranCenter);
+	Serial.print(", ");
+	Serial.print(photoTranRight);
+	Serial.print(", ");
+	Serial.println();
 //*/
 
 /*
@@ -80,13 +84,17 @@ void loop()
 	unsigned short wheelTest = analogRead(rightWheelSensor);
 	Serial.println(wheelTest);
 //*/
-//*
+/*
 	int wheelTest = digitalRead(leftWheelSensor);
 	Serial.println(wheelTest);
-//*/
+/*/
 
-	//delay(1000);
+	delay(1000);
 	//delay(200);
+
+//*
+	
+//*/
 // ----------------------
 
 
@@ -118,3 +126,4 @@ double error(unsigned short, unsigned short, unsigned short)
 {
 	//
 }
+
