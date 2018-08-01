@@ -127,7 +127,15 @@ void loop()
 	}
 }
 
-// Error function to be fed to the PD controller
+
+/*	error -- Error function to be fed to the PD controller
+	[Arguments]
+		- l: Input from phototransistor on the left
+		- c: Input from phototransistor in the middle
+		- r: Input from phototransistor on the right
+	[Return]
+		The value of the error function
+*/
 double error(unsigned short l, unsigned short c, unsigned short r)
 {
 	return static_cast<double>(10 * ((l - r) / log(c) + 20));
