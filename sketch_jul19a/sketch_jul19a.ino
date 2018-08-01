@@ -6,13 +6,13 @@
 constexpr unsigned char leftMotorControlPin = 5;
 constexpr unsigned char rightMotorControlPin = 3;
 
-constexpr unsigned char photoTranPinLeft = A0;		// Right
-constexpr unsigned char photoTranPinCenter = A1;		// Center
-constexpr unsigned char photoTranPinRight = A2;		// Left
+constexpr unsigned char photoTranPinLeft = A0;
+constexpr unsigned char photoTranPinCenter = A1;
+constexpr unsigned char photoTranPinRight = A2;
 
-constexpr unsigned char rLedPin = 6;			// Red
-constexpr unsigned char gLedPin = 8;			// Green
-constexpr unsigned char bLedPin = 7;			// Blue
+constexpr unsigned char rLedPin = 6;		// Red
+constexpr unsigned char gLedPin = 8;		// Green
+constexpr unsigned char bLedPin = 7;		// Blue
 
 //constexpr unsigned char leftWheelSensor = A7;
 //constexpr unsigned char rightWheelSensor = A6;
@@ -98,9 +98,13 @@ void loop()
 //*/
 // ----------------------
 
+	// Controller
+	steeringController.setError(error(photoTranLeft, photoTranCenter, photoTranRight));
 
+
+	// Motor Control
 	mainMotors.beginCalibMode();
-	char carPos = static_cast<char>(mainMotors.convertControllerOutput(error(photoTranLeft, photoTranCenter, photoTranRight)));
+	char carPos = static_cast<char>(mainMotors.convertControllerOutput(steeringController.getU()));
 	mainMotors.actuate();
 	
 
