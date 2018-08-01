@@ -1,4 +1,6 @@
+#include <math.h>
 #include "Controller.h"
+#include "Motors.h"
 
 // Pins
 constexpr unsigned char leftMotorControlPin = 5;
@@ -15,15 +17,15 @@ constexpr unsigned char bLedPin = 7;			// Blue
 //constexpr unsigned char leftWheelSensor = A7;
 //constexpr unsigned char rightWheelSensor = A6;
 
-constexpr unsigned char leftWheelSensor = 2;
+//constexpr unsigned char leftWheelSensor = 2;
 //constexpr unsigned char rightWheelSensor = A6;
-
-// Other constants
-constexpr unsigned char leftMotorPwmMax = 230;
-constexpr unsigned char rightMotorPwmMax = 255;
 
 
 double error(unsigned short, unsigned short, unsigned short);
+
+
+Controller steeringController;
+Motors mainMotors(leftMotorControlPin, rightMotorControlPin);
 
 
 void setup()
@@ -43,21 +45,20 @@ void setup()
 	pinMode(photoTranPinRight, INPUT);
 
 	// Wheel Speed Sensors
-	pinMode(leftWheelSensor, INPUT);
+	//pinMode(leftWheelSensor, INPUT);
 	//pinMode(rightWheelSensor, INPUT);
 
-	Serial.begin(9600);
+	//Serial.begin(9600);
 
+/*
 	digitalWrite(rLedPin, HIGH);
 	digitalWrite(gLedPin, HIGH);
 	digitalWrite(bLedPin, HIGH);
+//*/
 }
 
 void loop()
 {
-	unsigned char leftMotorPwm = leftMotorPwmMax;
-	unsigned char rightMotorPwm = rightMotorPwmMax;
-
 	// Sensors
 	unsigned short photoTranLeft = analogRead(photoTranPinLeft);
 	unsigned short photoTranCenter = analogRead(photoTranPinCenter);
@@ -65,7 +66,7 @@ void loop()
 
 
 // ------- Debug --------
-//*
+/*
 	Serial.print(photoTranLeft);
 	Serial.print(", ");
 	Serial.print(photoTranCenter);
@@ -89,7 +90,7 @@ void loop()
 	Serial.println(wheelTest);
 /*/
 
-	delay(1000);
+	//delay(1000);
 	//delay(200);
 
 //*
@@ -98,32 +99,37 @@ void loop()
 // ----------------------
 
 
-	// PWM Control
-	analogWrite(leftMotorControlPin, leftMotorPwm);			// Left motor
-	analogWrite(rightMotorControlPin, rightMotorPwm);		// Right motor
+	mainMotors.beginCalibMode();
+	char carPos = static_cast<char>(mainMotors.convertControllerOutput(error(photoTranLeft, photoTranCenter, photoTranRight)));
+	mainMotors.actuate();
+	
 
 	// LED Indicators
-	/*
-	if (false) {
-		digitalWrite(rLedPin, HIGH);
-		digitalWrite(gLedPin, LOW);
-		digitalWrite(bLedPin, LOW);
+	switch (carPos) {
+		case -1: {		// Car is off-track to the left -> red LED
+			digitalWrite(rLedPin, HIGH);
+			digitalWrite(gLedPin, LOW);
+			digitalWrite(bLedPin, LOW);
+			break;
+		}
+		case 0: {		// Car is centered -> green LED
+			digitalWrite(rLedPin, LOW);
+			digitalWrite(gLedPin, HIGH);
+			digitalWrite(bLedPin, LOW);
+			break;
+		}
+		case 1: {		// Car is off-track to the right -> blue LED
+			digitalWrite(rLedPin, LOW);
+			digitalWrite(gLedPin, LOW);
+			digitalWrite(bLedPin, HIGH);
+			break;
+		}
 	}
-	else if (false) {
-		digitalWrite(rLedPin, LOW);
-		digitalWrite(gLedPin, HIGH);
-		digitalWrite(bLedPin, LOW);
-	}
-	else if (false) {
-		digitalWrite(rLedPin, LOW);
-		digitalWrite(gLedPin, LOW);
-		digitalWrite(bLedPin, HIGH);
-	}
-	//*/
 }
 
-double error(unsigned short, unsigned short, unsigned short)
+// Error function to be fed to the PD controller
+double error(unsigned short l, unsigned short c, unsigned short r)
 {
-	//
+	return static_cast<double>(10 * ((l - r) / log(c) + 20));
 }
 
