@@ -4,9 +4,6 @@
 constexpr unsigned char leftPwmMax = 230;
 constexpr unsigned char rightPwmMax = 255;
 
-// Adjust with how much tolerance the car is considered to be "centered"
-constexpr double centerRatioMin = 0.9;
-constexpr double centerRatioMax = 1.1;
 
 class Motors
 {
@@ -66,21 +63,22 @@ int Motors::convertControllerOutput(double u)
 {
 	int ret;			// Return value
 
-	if (u < 0) {		// Car is off-track to the left
+	if (u < 1) {		// Car is off-track to the left
 		leftPwm = leftPwmMax;
 		rightPwm = rightPwmMax / -u;
 
 		ret = -1;
 	}
-	else {				// Car is off-track to the right
+	else if (u > 1) {	// Car is off-track to the right
 		rightPwm = rightPwmMax;
 		leftPwm = leftPwmMax / u;
 
 		ret = 1;
 	}
+	else {				// Car is at the center
+		rightPwm = rightPwmMax;
+		leftPwm = leftPwmMax;
 
-	// See if the car is virtually centered
-	if (static_cast<double>(leftPwm) / rightPwm >= centerRatioMin && static_cast<double>(leftPwm) / rightPwm <= centerRatioMax) {
 		ret = 0;
 	}
 
