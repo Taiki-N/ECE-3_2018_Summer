@@ -4,18 +4,18 @@
 
 // Pins
 constexpr unsigned char leftMotorControlPin = 5;
-constexpr unsigned char rightMotorControlPin = 3;
+constexpr unsigned char rightMotorControlPin = 6;
 
 constexpr unsigned char photoTranPinLeft = A0;
 constexpr unsigned char photoTranPinCenter = A1;
 constexpr unsigned char photoTranPinRight = A2;
 
-constexpr unsigned char rLedPin = 6;		// Red
+constexpr unsigned char rLedPin = 9;		// Red
 constexpr unsigned char gLedPin = 8;		// Green
 constexpr unsigned char bLedPin = 7;		// Blue
 
 constexpr unsigned char leftWheelSensor = 2;
-//constexpr unsigned char rightWheelSensor = A6;
+//constexpr unsigned char rightWheelSensor = 3;
 
 
 constexpr unsigned long wheelSpeedThreshold = 1000;		// [ms]
@@ -56,13 +56,17 @@ void setup()
 	//attachInterrupt(digitalPinToInterrupt(leftWheelSensor), leftWheelSpeedISR, FALLING);
 	//attachInterrupt(digitalPinToInterrupt(rightWheelSensor), rightWheelSpeedISR, FALLING);
 
-	//Serial.begin(9600);
+	Serial.begin(9600);
 
 /*
 	digitalWrite(rLedPin, HIGH);
 	digitalWrite(gLedPin, HIGH);
 	digitalWrite(bLedPin, HIGH);
 //*/
+
+	digitalWrite(rLedPin, LOW);
+	digitalWrite(gLedPin, LOW);
+	digitalWrite(bLedPin, LOW);
 }
 
 void loop()
@@ -74,7 +78,7 @@ void loop()
 
 
 // ------- Debug --------
-/*
+//*
 	Serial.print(photoTranLeft);
 	Serial.print(", ");
 	Serial.print(photoTranCenter);
@@ -101,17 +105,18 @@ void loop()
 	//delay(1000);
 	//delay(200);
 
-//*
-	
+/*
+	analogWrite(leftMotorControlPin, 250);
+	analogWrite(rightMotorControlPin, 255);
 //*/
 // ----------------------
 
 	// Controller
 	steeringController.setError(error(photoTranLeft, photoTranCenter, photoTranRight));
 
-
+//*
 	// Motor Control
-	mainMotors.beginCalibMode();
+	//mainMotors.beginCalibMode();
 	char carPos = static_cast<char>(mainMotors.convertControllerOutput(steeringController.getU()));
 	mainMotors.actuate();
 	
@@ -137,7 +142,7 @@ void loop()
 			break;
 		}
 	}
-
+//*/
 	// Wheel Speed Sensing System
 	if (leftWheelTime[1] - leftWheelTime[0] > wheelSpeedThreshold) {
 		//
@@ -145,6 +150,8 @@ void loop()
 	if (rightWheelTime[1] - rightWheelTime[0] > wheelSpeedThreshold) {
 		//
 	}
+	
+	//Serial.println(static_cast<int>(carPos));
 }
 
 
