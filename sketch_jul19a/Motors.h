@@ -67,13 +67,21 @@ int Motors::convertControllerOutput(double u)
 
 	if (u < -straightCondition) {		// Car is off-track to the left
 		leftPwm = leftPwmMax;
-		rightPwm = rightPwmMax / -u;
+		rightPwm = rightPwmMax + u;		// u is negative
+
+		if (rightPwm < 0) {
+			rightPwm = 0;
+		}
 
 		ret = -1;
 	}
 	else if (u > straightCondition) {	// Car is off-track to the right
 		rightPwm = rightPwmMax;
-		leftPwm = leftPwmMax / u;
+		leftPwm = leftPwmMax - u;		// u is positive
+
+		if (leftPwm < 0) {
+			leftPwm = 0;
+		}
 
 		ret = 1;
 	}
