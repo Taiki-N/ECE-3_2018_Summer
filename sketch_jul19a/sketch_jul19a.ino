@@ -14,18 +14,23 @@ constexpr unsigned char rLedPin = 6;		// Red
 constexpr unsigned char gLedPin = 8;		// Green
 constexpr unsigned char bLedPin = 7;		// Blue
 
-//constexpr unsigned char leftWheelSensor = A7;
+constexpr unsigned char leftWheelSensor = 2;
 //constexpr unsigned char rightWheelSensor = A6;
 
-//constexpr unsigned char leftWheelSensor = 2;
-//constexpr unsigned char rightWheelSensor = A6;
+
+constexpr unsigned long wheelSpeedThreshold = 1000;		// [ms]
 
 
 double error(unsigned short, unsigned short, unsigned short);
+void leftWheelSpeedISR();
+void rightWheelSpeedISR();
 
 
 Controller steeringController;
 Motors mainMotors(leftMotorControlPin, rightMotorControlPin);
+
+unsigned long leftWheelTime[2] {0};
+unsigned long rightWheelTime[2] {0};
 
 
 void setup()
@@ -47,6 +52,9 @@ void setup()
 	// Wheel Speed Sensors
 	//pinMode(leftWheelSensor, INPUT);
 	//pinMode(rightWheelSensor, INPUT);
+
+	//attachInterrupt(digitalPinToInterrupt(leftWheelSensor), leftWheelSpeedISR, FALLING);
+	//attachInterrupt(digitalPinToInterrupt(rightWheelSensor), rightWheelSpeedISR, FALLING);
 
 	//Serial.begin(9600);
 
@@ -129,6 +137,14 @@ void loop()
 			break;
 		}
 	}
+
+	// Wheel Speed Sensing System
+	if (leftWheelTime[1] - leftWheelTime[0] > wheelSpeedThreshold) {
+		//
+	}
+	if (rightWheelTime[1] - rightWheelTime[0] > wheelSpeedThreshold) {
+		//
+	}
 }
 
 
@@ -145,3 +161,14 @@ double error(unsigned short l, unsigned short c, unsigned short r)
 	return static_cast<double>(10 * ((l - r) / log(c) + 20));
 }
 
+void leftWheelSpeedISR()
+{
+	leftWheelTime[0] = leftWheelTime[1];
+	leftWheelTime[1] = millis();
+}
+
+void rightWheelSpeedISR()
+{
+	rightWheelTime[0] = rightWheelTime[1];
+	rightWheelTime[1] = millis();
+}
