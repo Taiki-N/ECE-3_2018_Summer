@@ -2,7 +2,7 @@
 #define CONTROLLER_H
 
 constexpr double kp = 0.01;			// Proportional constant
-constexpr double kd = 0.005;		// Derivative constant
+constexpr double kd = 0;		// Derivative constant
 
 
 class Controller
