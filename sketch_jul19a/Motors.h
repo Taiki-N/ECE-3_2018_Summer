@@ -24,6 +24,8 @@ public:
 	int convertControllerOutput(double);
 	void actuate() const;
 	void zeroPwm();
+	void maxLeft();
+	void maxRight();
 	void beginCalibMode();
 	void endCalibMode();
 };
@@ -115,6 +117,16 @@ void Motors::actuate() const
 void Motors::zeroPwm()
 {
 	leftPwm = rightPwm = 0;
+}
+
+void Motors::maxLeft()
+{
+	leftPwm = leftPwmMax;
+}
+
+void Motors::maxRight()
+{
+	rightPwm = rightPwmMax;
 }
 
 /*	beginCalibMode -- Begins calibration mode (= PWMs are fixed to maximum to calibrate

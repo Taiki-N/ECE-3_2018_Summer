@@ -119,14 +119,15 @@ void loop()
 	char carPos;
 	if (false) {					// End of track
 		mainMotors.zeroPwm();
-		char carPos = 10;			// Car is at rest
+		carPos = 10;				// Car is at rest
 	}
 	else {
 		//mainMotors.beginCalibMode();
 		carPos = static_cast<char>(mainMotors.convertControllerOutput(steeringController.getU()));
 	}
 	mainMotors.actuate();
-	
+
+	//Serial.println(static_cast<int>(carPos));
 
 	// LED Indicators
 	switch (carPos) {
@@ -156,15 +157,48 @@ void loop()
 		}
 	}
 //*/
+
+/*
 	// Wheel Speed Sensing System
 	if (leftWheelTime[1] - leftWheelTime[0] > wheelSpeedThreshold) {
-		//
+		for (int i = 0; i < 5; ++i) {
+			digitalWrite(rLedPin, HIGH);
+			digitalWrite(gLedPin, HIGH);
+			digitalWrite(bLedPin, HIGH);
+
+			delay(100);
+
+			digitalWrite(rLedPin, LOW);
+			digitalWrite(gLedPin, LOW);
+			digitalWrite(bLedPin, LOW);
+
+			delay(100);
+		}
+
+		mainMotors.maxLeft();
+		mainMotors.actuate();
+		delay(50);
 	}
 	if (rightWheelTime[1] - rightWheelTime[0] > wheelSpeedThreshold) {
-		//
+		for (int i = 0; i < 5; ++i) {
+			digitalWrite(rLedPin, HIGH);
+			digitalWrite(gLedPin, HIGH);
+			digitalWrite(bLedPin, HIGH);
+
+			delay(100);
+
+			digitalWrite(rLedPin, LOW);
+			digitalWrite(gLedPin, LOW);
+			digitalWrite(bLedPin, LOW);
+
+			delay(100);
+		}
+
+		mainMotors.maxRight();
+		mainMotors.actuate();
+		delay(50);
 	}
-	
-	//Serial.println(static_cast<int>(carPos));
+//*/
 }
 
 
