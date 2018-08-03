@@ -116,8 +116,15 @@ void loop()
 
 //*
 	// Motor Control
-	//mainMotors.beginCalibMode();
-	char carPos = static_cast<char>(mainMotors.convertControllerOutput(steeringController.getU()));
+	char carPos;
+	if (false) {					// End of track
+		mainMotors.zeroPwm();
+		char carPos = 10;			// Car is at rest
+	}
+	else {
+		//mainMotors.beginCalibMode();
+		carPos = static_cast<char>(mainMotors.convertControllerOutput(steeringController.getU()));
+	}
 	mainMotors.actuate();
 	
 
@@ -137,6 +144,12 @@ void loop()
 		}
 		case 1: {		// Car is off-track to the right -> blue LED
 			digitalWrite(rLedPin, LOW);
+			digitalWrite(gLedPin, LOW);
+			digitalWrite(bLedPin, HIGH);
+			break;
+		}
+		case 10: {		// Car is at rest at the end of track -> red and blue LED
+			digitalWrite(rLedPin, HIGH);
 			digitalWrite(gLedPin, LOW);
 			digitalWrite(bLedPin, HIGH);
 			break;

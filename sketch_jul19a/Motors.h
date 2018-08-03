@@ -23,6 +23,7 @@ public:
 	unsigned char getPwm(unsigned char) const;
 	int convertControllerOutput(double);
 	void actuate() const;
+	void zeroPwm();
 	void beginCalibMode();
 	void endCalibMode();
 };
@@ -107,6 +108,13 @@ void Motors::actuate() const
 		analogWrite(leftPin, leftPwmMax);			// Left motor
 		analogWrite(rightPin, rightPwmMax);			// Right motor
 	}
+}
+
+/* zeroPwm -- Sets PWMs to zero, which will not be effective until actuate() is called.
+*/
+void Motors::zeroPwm()
+{
+	leftPwm = rightPwm = 0;
 }
 
 /*	beginCalibMode -- Begins calibration mode (= PWMs are fixed to maximum to calibrate
