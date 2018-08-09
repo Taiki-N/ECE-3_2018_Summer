@@ -103,7 +103,7 @@ void loop()
 /*/
 
 	//delay(1000);
-	//delay(200);
+	delay(200);
 
 /*
 	analogWrite(leftMotorControlPin, 250);
@@ -122,7 +122,7 @@ void loop()
 		carPos = 10;				// Car is at rest
 	}
 	else {
-		//mainMotors.beginCalibMode();
+		mainMotors.beginCalibMode();
 		carPos = static_cast<char>(mainMotors.convertControllerOutput(steeringController.getU()));
 	}
 	mainMotors.actuate();
