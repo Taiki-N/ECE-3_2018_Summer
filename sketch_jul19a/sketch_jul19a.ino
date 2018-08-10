@@ -22,6 +22,8 @@ constexpr unsigned long wheelSpeedThreshold = 1000;		// [ms]
 
 
 double error(unsigned short, unsigned short, unsigned short);
+double rc(unsigned short, unsigned short);
+double lc(unsigned short, unsigned short);
 void leftWheelSpeedISR();
 void rightWheelSpeedISR();
 
@@ -56,7 +58,7 @@ void setup()
 	//attachInterrupt(digitalPinToInterrupt(leftWheelSensor), leftWheelSpeedISR, FALLING);
 	//attachInterrupt(digitalPinToInterrupt(rightWheelSensor), rightWheelSpeedISR, FALLING);
 
-	Serial.begin(9600);
+	//Serial.begin(9600);
 
 /*
 	digitalWrite(rLedPin, HIGH);
@@ -78,7 +80,7 @@ void loop()
 
 
 // ------- Debug --------
-//*
+/*
 	Serial.print(photoTranLeft);
 	Serial.print(", ");
 	Serial.print(photoTranCenter);
@@ -88,33 +90,19 @@ void loop()
 	Serial.println();
 //*/
 
-/*
-	unsigned short photoTranTest = analogRead(A5);
-	Serial.println(photoTranTest);
-//*/
-
-/*
-	unsigned short wheelTest = analogRead(rightWheelSensor);
-	Serial.println(wheelTest);
-//*/
-/*
-	int wheelTest = digitalRead(leftWheelSensor);
-	Serial.println(wheelTest);
-/*/
-
 	//delay(1000);
-	delay(200);
+	//delay(200);
 
-/*
-	analogWrite(leftMotorControlPin, 250);
+//*
+	analogWrite(leftMotorControlPin, 255);
 	analogWrite(rightMotorControlPin, 255);
 //*/
 // ----------------------
 
 	// Controller
-	steeringController.setError(error(photoTranLeft, photoTranCenter, photoTranRight));
+	//steeringController.setError(error(photoTranLeft, photoTranCenter, photoTranRight));
 
-//*
+/*
 	// Motor Control
 	char carPos;
 	if (false) {					// End of track
@@ -122,7 +110,7 @@ void loop()
 		carPos = 10;				// Car is at rest
 	}
 	else {
-		mainMotors.beginCalibMode();
+		//mainMotors.beginCalibMode();
 		carPos = static_cast<char>(mainMotors.convertControllerOutput(steeringController.getU()));
 	}
 	mainMotors.actuate();
@@ -212,7 +200,22 @@ void loop()
 */
 double error(unsigned short l, unsigned short c, unsigned short r)
 {
-	return static_cast<double>(10 * ((l - r) / log(c) + 20));
+	if (l > r) {		// Car is off to the right
+		return 100 * (lc(l, c) + 0.05);
+	}
+	else {				// Car is off to the left
+		return 100 * (rc(r, c) - 0.0975) - 2.3;
+	}
+}
+
+double rc(unsigned short r, unsigned short c)
+{
+	return 0.75 * (300 / r - 300 / (1.5 * c + 100));
+}
+
+double lc(unsigned short l, unsigned short c)
+{
+	return 300 / (1.2 * c + 100) - 300 / l;
 }
 
 void leftWheelSpeedISR()

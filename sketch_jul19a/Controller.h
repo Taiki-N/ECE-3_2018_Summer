@@ -1,7 +1,7 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
-constexpr double kp = 0.0001;			// Proportional constant
+constexpr double kp = 0.1;			// Proportional constant
 constexpr double kd = 0;		// Derivative constant
 
 

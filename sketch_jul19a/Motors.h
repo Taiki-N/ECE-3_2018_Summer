@@ -1,7 +1,7 @@
 #ifndef MOTORS_H
 #define MOTORS_H
 
-constexpr unsigned char leftPwmMax = 250;
+constexpr unsigned char leftPwmMax = 255;
 constexpr unsigned char rightPwmMax = 255;
 
 constexpr unsigned char straightCondition = 1;
