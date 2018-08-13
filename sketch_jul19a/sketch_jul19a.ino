@@ -3,8 +3,8 @@
 #include "Motors.h"
 
 // Pins
-constexpr unsigned char leftMotorControlPin = 5;
-constexpr unsigned char rightMotorControlPin = 6;
+constexpr unsigned char leftMotorControlPin = 11;
+constexpr unsigned char rightMotorControlPin = 5;
 
 constexpr unsigned char photoTranPinLeft = A0;
 constexpr unsigned char photoTranPinCenter = A1;
@@ -14,8 +14,8 @@ constexpr unsigned char rLedPin = 9;		// Red
 constexpr unsigned char gLedPin = 8;		// Green
 constexpr unsigned char bLedPin = 7;		// Blue
 
-constexpr unsigned char leftWheelSensor = 2;
-//constexpr unsigned char rightWheelSensor = 3;
+constexpr unsigned char leftWheelSensor = 3;
+constexpr unsigned char rightWheelSensor = 2;
 
 
 constexpr unsigned long wheelSpeedThreshold = 1000;		// [ms]
@@ -52,13 +52,13 @@ void setup()
 	pinMode(photoTranPinRight, INPUT);
 
 	// Wheel Speed Sensors
-	//pinMode(leftWheelSensor, INPUT);
-	//pinMode(rightWheelSensor, INPUT);
+	pinMode(leftWheelSensor, INPUT);
+	pinMode(rightWheelSensor, INPUT);
 
-	//attachInterrupt(digitalPinToInterrupt(leftWheelSensor), leftWheelSpeedISR, FALLING);
-	//attachInterrupt(digitalPinToInterrupt(rightWheelSensor), rightWheelSpeedISR, FALLING);
+	attachInterrupt(digitalPinToInterrupt(leftWheelSensor), leftWheelSpeedISR, RISING);
+	attachInterrupt(digitalPinToInterrupt(rightWheelSensor), rightWheelSpeedISR, RISING);
 
-	//Serial.begin(9600);
+	Serial.begin(9600);
 
 /*
 	digitalWrite(rLedPin, HIGH);
@@ -93,16 +93,18 @@ void loop()
 	//delay(1000);
 	//delay(200);
 
-//*
+/*
 	analogWrite(leftMotorControlPin, 255);
-	analogWrite(rightMotorControlPin, 255);
+	analogWrite(rightMotorControlPin, 200);
 //*/
 // ----------------------
 
+//*
 	// Controller
-	//steeringController.setError(error(photoTranLeft, photoTranCenter, photoTranRight));
+	steeringController.setError(error(photoTranLeft, photoTranCenter, photoTranRight));
 
-/*
+	Serial.println(error(photoTranLeft, photoTranCenter, photoTranRight));
+
 	// Motor Control
 	char carPos;
 	if (false) {					// End of track
@@ -167,6 +169,7 @@ void loop()
 		mainMotors.actuate();
 		delay(50);
 	}
+/*
 	if (rightWheelTime[1] - rightWheelTime[0] > wheelSpeedThreshold) {
 		for (int i = 0; i < 5; ++i) {
 			digitalWrite(rLedPin, HIGH);

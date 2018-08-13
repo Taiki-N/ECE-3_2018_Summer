@@ -2,9 +2,9 @@
 #define MOTORS_H
 
 constexpr unsigned char leftPwmMax = 255;
-constexpr unsigned char rightPwmMax = 255;
+constexpr unsigned char rightPwmMax = 230;
 
-constexpr unsigned char straightCondition = 1;
+constexpr unsigned char straightCondition = 0;
 
 
 class Motors
@@ -68,7 +68,7 @@ int Motors::convertControllerOutput(double u)
 {
 	int ret;			// Return value
 
-	if (u < -straightCondition) {		// Car is off-track to the left
+	if (u < straightCondition) {		// Car is off-track to the left
 		leftPwm = leftPwmMax;
 		rightPwm = rightPwmMax + u;		// u is negative
 
