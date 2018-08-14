@@ -27,7 +27,9 @@ void wheelSpeedISR();
 Controller steeringController;
 Motors mainMotors(leftMotorControlPin, rightMotorControlPin);
 
-unsigned long wheelTime[2] {0};
+unsigned long wheelTime = 0;		// ms
+unsigned long LEDTime = 0;			// ms
+unsigned char LEDCount = 0;
 
 void setup()
 {
@@ -149,26 +151,27 @@ void loop()
 
 //*
 	// Wheel Speed Sensing System
-	if (wheelTime[1] - wheelTime[0] > wheelSpeedThreshold) {
-		for (int i = 0; i < 5; ++i) {
-			digitalWrite(rLedPin, HIGH);
-			digitalWrite(gLedPin, HIGH);
-			digitalWrite(bLedPin, HIGH);
+	if (millis() - wheelTime > wheelSpeedThreshold) {
+		digitalWrite(rLedPin, HIGH);
+		digitalWrite(gLedPin, HIGH);
+		digitalWrite(bLedPin, HIGH);
 
-			delay(100);
-
+		if (millis() - LEDTime > 100) {
 			digitalWrite(rLedPin, LOW);
 			digitalWrite(gLedPin, LOW);
 			digitalWrite(bLedPin, LOW);
-
-			delay(100);
 		}
 
-		mainMotors.maxLeft();
-		mainMotors.actuate();
-		delay(50);
+		if (millis() - LEDTime > 200) {
+			++LEDCount;
+			LEDTime = millis();
+		}
 
-		wheelTime[0] = wheelTime[1] = 0;
+		if (LEDCount == 5) {
+			mainMotors.maxLeft();
+			mainMotors.actuate();
+			LEDCount = 0;
+		}
 	}
 //*/
 }
@@ -204,6 +207,5 @@ double lc(unsigned short l, unsigned short c)
 
 void wheelSpeedISR()
 {
-	wheelTime[0] = wheelTime[1];
-	wheelTime[1] = millis();
+	wheelTime = millis();
 }
