@@ -1,8 +1,11 @@
 #ifndef MOTORS_H
 #define MOTORS_H
 
-constexpr unsigned char leftPwmMax = 255;
-constexpr unsigned char rightPwmMax = 230;
+//constexpr unsigned char leftPwmMax = 255;		// 6V
+//constexpr unsigned char rightPwmMax = 230;		// 6V
+
+constexpr unsigned char leftPwmMax = 95;		// 9V
+constexpr unsigned char rightPwmMax = 100;		// 9V
 
 constexpr unsigned char straightCondition = 0;
 
@@ -68,23 +71,32 @@ int Motors::convertControllerOutput(double u)
 {
 	int ret;			// Return value
 
-	if (u < straightCondition) {		// Car is off-track to the left
-		leftPwm = leftPwmMax;
-		rightPwm = rightPwmMax + u;		// u is negative
+/*
+	Serial.print("U:");
+	Serial.println(u);
+//*/
 
-		if (rightPwm < 0) {
-			rightPwm = 0;
+	if (u < -straightCondition) {		// Car is off-track to the left
+		leftPwm = leftPwmMax;
+		int right = rightPwmMax + u;		// u is negative
+
+		if (right < 0) {
+			right = 0;
 		}
+
+		rightPwm = right;
 
 		ret = -1;
 	}
 	else if (u > straightCondition) {	// Car is off-track to the right
 		rightPwm = rightPwmMax;
-		leftPwm = leftPwmMax - u;		// u is positive
+		int left = leftPwmMax - u;		// u is positive
 
-		if (leftPwm < 0) {
-			leftPwm = 0;
+		if (left < 0) {
+			left = 0;
 		}
+
+		leftPwm = left;
 
 		ret = 1;
 	}

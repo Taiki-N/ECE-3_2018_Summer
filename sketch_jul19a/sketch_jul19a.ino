@@ -3,37 +3,31 @@
 #include "Motors.h"
 
 // Pins
-constexpr unsigned char leftMotorControlPin = 11;
+constexpr unsigned char leftMotorControlPin = 6;
 constexpr unsigned char rightMotorControlPin = 5;
 
 constexpr unsigned char photoTranPinLeft = A0;
-constexpr unsigned char photoTranPinCenter = A1;
+constexpr unsigned char photoTranPinCenter = A3;
 constexpr unsigned char photoTranPinRight = A2;
 
 constexpr unsigned char rLedPin = 9;		// Red
 constexpr unsigned char gLedPin = 8;		// Green
 constexpr unsigned char bLedPin = 7;		// Blue
 
-constexpr unsigned char leftWheelSensor = 3;
-constexpr unsigned char rightWheelSensor = 2;
+constexpr unsigned char wheelSensor = 2;
 
-
-constexpr unsigned long wheelSpeedThreshold = 1000;		// [ms]
+constexpr unsigned long wheelSpeedThreshold = 2000;		// [ms]
 
 
 double error(unsigned short, unsigned short, unsigned short);
 double rc(unsigned short, unsigned short);
 double lc(unsigned short, unsigned short);
-void leftWheelSpeedISR();
-void rightWheelSpeedISR();
-
+void wheelSpeedISR();
 
 Controller steeringController;
 Motors mainMotors(leftMotorControlPin, rightMotorControlPin);
 
-unsigned long leftWheelTime[2] {0};
-unsigned long rightWheelTime[2] {0};
-
+unsigned long wheelTime[2] {0};
 
 void setup()
 {
@@ -52,13 +46,11 @@ void setup()
 	pinMode(photoTranPinRight, INPUT);
 
 	// Wheel Speed Sensors
-	pinMode(leftWheelSensor, INPUT);
-	pinMode(rightWheelSensor, INPUT);
+	pinMode(wheelSensor, INPUT);
 
-	attachInterrupt(digitalPinToInterrupt(leftWheelSensor), leftWheelSpeedISR, RISING);
-	attachInterrupt(digitalPinToInterrupt(rightWheelSensor), rightWheelSpeedISR, RISING);
+	attachInterrupt(digitalPinToInterrupt(wheelSensor), wheelSpeedISR, FALLING);
 
-	Serial.begin(9600);
+	//Serial.begin(9600);
 
 /*
 	digitalWrite(rLedPin, HIGH);
@@ -94,8 +86,8 @@ void loop()
 	//delay(200);
 
 /*
-	analogWrite(leftMotorControlPin, 255);
-	analogWrite(rightMotorControlPin, 200);
+	analogWrite(leftMotorControlPin, 75);
+	analogWrite(rightMotorControlPin, 80);
 //*/
 // ----------------------
 
@@ -103,7 +95,7 @@ void loop()
 	// Controller
 	steeringController.setError(error(photoTranLeft, photoTranCenter, photoTranRight));
 
-	Serial.println(error(photoTranLeft, photoTranCenter, photoTranRight));
+	//Serial.println(error(photoTranLeft, photoTranCenter, photoTranRight));
 
 	// Motor Control
 	char carPos;
@@ -118,6 +110,13 @@ void loop()
 	mainMotors.actuate();
 
 	//Serial.println(static_cast<int>(carPos));
+/*
+	Serial.print("L:");
+	Serial.println(static_cast<int>(mainMotors.getPwm(0)));
+	Serial.print("R:");
+	Serial.println(static_cast<int>(mainMotors.getPwm(1)));
+//*/
+	//delay(1);
 
 	// LED Indicators
 	switch (carPos) {
@@ -148,9 +147,9 @@ void loop()
 	}
 //*/
 
-/*
+//*
 	// Wheel Speed Sensing System
-	if (leftWheelTime[1] - leftWheelTime[0] > wheelSpeedThreshold) {
+	if (wheelTime[1] - wheelTime[0] > wheelSpeedThreshold) {
 		for (int i = 0; i < 5; ++i) {
 			digitalWrite(rLedPin, HIGH);
 			digitalWrite(gLedPin, HIGH);
@@ -168,26 +167,8 @@ void loop()
 		mainMotors.maxLeft();
 		mainMotors.actuate();
 		delay(50);
-	}
-/*
-	if (rightWheelTime[1] - rightWheelTime[0] > wheelSpeedThreshold) {
-		for (int i = 0; i < 5; ++i) {
-			digitalWrite(rLedPin, HIGH);
-			digitalWrite(gLedPin, HIGH);
-			digitalWrite(bLedPin, HIGH);
 
-			delay(100);
-
-			digitalWrite(rLedPin, LOW);
-			digitalWrite(gLedPin, LOW);
-			digitalWrite(bLedPin, LOW);
-
-			delay(100);
-		}
-
-		mainMotors.maxRight();
-		mainMotors.actuate();
-		delay(50);
+		wheelTime[0] = wheelTime[1] = 0;
 	}
 //*/
 }
@@ -221,14 +202,8 @@ double lc(unsigned short l, unsigned short c)
 	return 300 / (1.2 * c + 100) - 300 / l;
 }
 
-void leftWheelSpeedISR()
+void wheelSpeedISR()
 {
-	leftWheelTime[0] = leftWheelTime[1];
-	leftWheelTime[1] = millis();
-}
-
-void rightWheelSpeedISR()
-{
-	rightWheelTime[0] = rightWheelTime[1];
-	rightWheelTime[1] = millis();
+	wheelTime[0] = wheelTime[1];
+	wheelTime[1] = millis();
 }
