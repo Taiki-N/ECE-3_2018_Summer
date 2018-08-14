@@ -1,10 +1,10 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
-//constexpr double kp = 0.1;			// Proportional constant 6V
+constexpr double kp = 0.8;			// Proportional constant 6V
 constexpr double kd = 0;		// Derivative constant
 
-constexpr double kp = 0.3;			// Proportional constant 9V
+//constexpr double kp = 0.3;			// Proportional constant 9V
 
 class Controller
 {

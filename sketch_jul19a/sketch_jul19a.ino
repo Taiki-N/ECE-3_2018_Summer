@@ -52,7 +52,7 @@ void setup()
 
 	attachInterrupt(digitalPinToInterrupt(wheelSensor), wheelSpeedISR, FALLING);
 
-	//Serial.begin(9600);
+	Serial.begin(9600);
 
 /*
 	digitalWrite(rLedPin, HIGH);
@@ -74,7 +74,7 @@ void loop()
 
 
 // ------- Debug --------
-/*
+//*
 	Serial.print(photoTranLeft);
 	Serial.print(", ");
 	Serial.print(photoTranCenter);
@@ -118,7 +118,7 @@ void loop()
 	Serial.print("R:");
 	Serial.println(static_cast<int>(mainMotors.getPwm(1)));
 //*/
-	//delay(1);
+	delay(1);
 
 	// LED Indicators
 	switch (carPos) {
@@ -149,25 +149,25 @@ void loop()
 	}
 //*/
 
-//*
+/*
 	// Wheel Speed Sensing System
 	if (millis() - wheelTime > wheelSpeedThreshold) {
 		digitalWrite(rLedPin, HIGH);
 		digitalWrite(gLedPin, HIGH);
 		digitalWrite(bLedPin, HIGH);
 
-		if (millis() - LEDTime > 100) {
+		if (millis() - LEDTime > 100) {			// 100 ms delay
 			digitalWrite(rLedPin, LOW);
 			digitalWrite(gLedPin, LOW);
 			digitalWrite(bLedPin, LOW);
 		}
 
-		if (millis() - LEDTime > 200) {
+		if (millis() - LEDTime > 200) {			// 100 ms more delay
 			++LEDCount;
 			LEDTime = millis();
 		}
 
-		if (LEDCount == 5) {
+		if (LEDCount == 5) {		// After five flashes
 			mainMotors.maxLeft();
 			mainMotors.actuate();
 			LEDCount = 0;

@@ -1,11 +1,11 @@
 #ifndef MOTORS_H
 #define MOTORS_H
 
-//constexpr unsigned char leftPwmMax = 255;		// 6V
-//constexpr unsigned char rightPwmMax = 230;		// 6V
+constexpr unsigned char leftPwmMax = 255;		// 6V
+constexpr unsigned char rightPwmMax = 230;		// 6V
 
-constexpr unsigned char leftPwmMax = 95;		// 9V
-constexpr unsigned char rightPwmMax = 100;		// 9V
+//constexpr unsigned char leftPwmMax = 95;		// 9V
+//constexpr unsigned char rightPwmMax = 100;		// 9V
 
 constexpr unsigned char straightCondition = 0;
 
@@ -72,7 +72,6 @@ int Motors::convertControllerOutput(double u)
 	int ret;			// Return value
 
 /*
-	Serial.print("U:");
 	Serial.println(u);
 //*/
 
