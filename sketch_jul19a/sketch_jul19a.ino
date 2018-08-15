@@ -6,9 +6,9 @@
 constexpr unsigned char leftMotorControlPin = 6;
 constexpr unsigned char rightMotorControlPin = 5;
 
-constexpr unsigned char photoTranPinLeft = A0;
-constexpr unsigned char photoTranPinCenter = A3;
-constexpr unsigned char photoTranPinRight = A2;
+constexpr unsigned char photoTranPinLeft = A2;
+constexpr unsigned char photoTranPinCenter = A1;
+constexpr unsigned char photoTranPinRight = A0;
 
 constexpr unsigned char rLedPin = 9;		// Red
 constexpr unsigned char gLedPin = 8;		// Green
