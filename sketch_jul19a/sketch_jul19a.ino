@@ -19,9 +19,9 @@ constexpr unsigned char wheelSensor = 2;
 constexpr unsigned long wheelSpeedThreshold = 2000;		// [ms]
 
 
-double error(unsigned short, unsigned short, unsigned short);
-double rc(unsigned short, unsigned short);
-double lc(unsigned short, unsigned short);
+double error(short, short, short);
+double rc(short, short);
+double lc(short, short);
 void wheelSpeedISR();
 
 Controller steeringController;
@@ -52,29 +52,30 @@ void setup()
 
 	attachInterrupt(digitalPinToInterrupt(wheelSensor), wheelSpeedISR, FALLING);
 
-	Serial.begin(9600);
+	//Serial.begin(9600);
 
 /*
 	digitalWrite(rLedPin, HIGH);
 	digitalWrite(gLedPin, HIGH);
 	digitalWrite(bLedPin, HIGH);
 //*/
-
+//*
 	digitalWrite(rLedPin, LOW);
 	digitalWrite(gLedPin, LOW);
 	digitalWrite(bLedPin, LOW);
+//*/
 }
 
 void loop()
 {
 	// Sensors
-	unsigned short photoTranLeft = analogRead(photoTranPinLeft);
-	unsigned short photoTranCenter = analogRead(photoTranPinCenter);
-	unsigned short photoTranRight = analogRead(photoTranPinRight);
+	short photoTranLeft = analogRead(photoTranPinLeft);
+	short photoTranCenter = analogRead(photoTranPinCenter);
+	short photoTranRight = analogRead(photoTranPinRight);
 
 
 // ------- Debug --------
-//*
+/*
 	Serial.print(photoTranLeft);
 	Serial.print(", ");
 	Serial.print(photoTranCenter);
@@ -100,14 +101,14 @@ void loop()
 	//Serial.println(error(photoTranLeft, photoTranCenter, photoTranRight));
 
 	// Motor Control
-	char carPos;
+	int carPos;
 	if (false) {					// End of track
 		mainMotors.zeroPwm();
 		carPos = 10;				// Car is at rest
 	}
 	else {
 		//mainMotors.beginCalibMode();
-		carPos = static_cast<char>(mainMotors.convertControllerOutput(steeringController.getU()));
+		carPos = mainMotors.convertControllerOutput(steeringController.getU());
 	}
 	mainMotors.actuate();
 
@@ -118,8 +119,8 @@ void loop()
 	Serial.print("R:");
 	Serial.println(static_cast<int>(mainMotors.getPwm(1)));
 //*/
-	delay(1);
-
+	//delay(1);
+/*
 	// LED Indicators
 	switch (carPos) {
 		case -1: {		// Car is off-track to the left -> red LED
@@ -129,9 +130,9 @@ void loop()
 			break;
 		}
 		case 0: {		// Car is centered -> green LED
-			digitalWrite(rLedPin, LOW);
+			digitalWrite(rLedPin, HIGH);
 			digitalWrite(gLedPin, HIGH);
-			digitalWrite(bLedPin, LOW);
+			digitalWrite(bLedPin, HIGH);
 			break;
 		}
 		case 1: {		// Car is off-track to the right -> blue LED
@@ -146,6 +147,28 @@ void loop()
 			digitalWrite(bLedPin, HIGH);
 			break;
 		}
+	}
+*/
+	Serial.println(carPos);
+	if (carPos == -1) {		// Car is off-track to the left -> red LED
+		digitalWrite(rLedPin, HIGH);
+		digitalWrite(gLedPin, LOW);
+		digitalWrite(bLedPin, LOW);
+	}
+	else if (carPos == 0) {		// Car is centered -> green LED
+		digitalWrite(rLedPin, HIGH);
+		digitalWrite(gLedPin, HIGH);
+		digitalWrite(bLedPin, HIGH);
+	}
+	else if (carPos == 1) {		// Car is off-track to the right -> blue LED
+		digitalWrite(rLedPin, LOW);
+		digitalWrite(gLedPin, LOW);
+		digitalWrite(bLedPin, HIGH);
+	}
+	else if (carPos == 10) {		// Car is at rest at the end of track -> red and blue LED
+		digitalWrite(rLedPin, HIGH);
+		digitalWrite(gLedPin, LOW);
+		digitalWrite(bLedPin, HIGH);
 	}
 //*/
 
@@ -185,24 +208,29 @@ void loop()
 	[Return]
 		The value of the error function
 */
-double error(unsigned short l, unsigned short c, unsigned short r)
+double error(short l, short c, short r)
 {
-	if (l > r) {		// Car is off to the right
-		return 100 * (lc(l, c) + 0.05);
+	double ret = rc(r, c);
+
+/*
+	Serial.println(ret);
+//*/
+
+	if (ret >= 0) {
+		ret = lc(l, c);		// Car is off to the right
 	}
-	else {				// Car is off to the left
-		return 100 * (rc(r, c) - 0.0975) - 2.3;
-	}
+
+	return ret;
 }
 
-double rc(unsigned short r, unsigned short c)
+double rc(short r, short c)
 {
-	return 0.75 * (300 / r - 300 / (1.5 * c + 100));
+	return 0.3 * (-r - 300 / c) + 94.1;
 }
 
-double lc(unsigned short l, unsigned short c)
+double lc(short l, short c)
 {
-	return 300 / (1.2 * c + 100) - 300 / l;
+	return 0.125 * (l - c) + 50.84;
 }
 
 void wheelSpeedISR()
