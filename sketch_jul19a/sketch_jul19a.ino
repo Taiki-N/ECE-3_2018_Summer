@@ -27,6 +27,10 @@ void wheelSpeedISR();
 Controller steeringController;
 Motors mainMotors(leftMotorControlPin, rightMotorControlPin);
 
+bool stop = false;		// At the end of track
+
+int stopTime = 0;
+
 unsigned long wheelTime = 0;		// ms
 unsigned long LEDTime = 0;			// ms
 unsigned char LEDCount = 0;
@@ -54,149 +58,132 @@ void setup()
 
 	//Serial.begin(9600);
 
-/*
-	digitalWrite(rLedPin, HIGH);
-	digitalWrite(gLedPin, HIGH);
-	digitalWrite(bLedPin, HIGH);
-//*/
 //*
 	digitalWrite(rLedPin, LOW);
 	digitalWrite(gLedPin, LOW);
 	digitalWrite(bLedPin, LOW);
 //*/
+
+	stopTime = millis();
 }
 
 void loop()
 {
-	// Sensors
-	short photoTranLeft = analogRead(photoTranPinLeft);
-	short photoTranCenter = analogRead(photoTranPinCenter);
-	short photoTranRight = analogRead(photoTranPinRight);
+	if (true) {
+		// Sensors
+		short photoTranLeft = analogRead(photoTranPinLeft);
+		short photoTranCenter = analogRead(photoTranPinCenter);
+		short photoTranRight = analogRead(photoTranPinRight);
 
 
-// ------- Debug --------
-/*
-	Serial.print(photoTranLeft);
-	Serial.print(", ");
-	Serial.print(photoTranCenter);
-	Serial.print(", ");
-	Serial.print(photoTranRight);
-	Serial.print(", ");
-	Serial.println();
-//*/
+	// ------- Debug --------
+	/*
+		Serial.print(photoTranLeft);
+		Serial.print(", ");
+		Serial.print(photoTranCenter);
+		Serial.print(", ");
+		Serial.print(photoTranRight);
+		Serial.print(", ");
+		Serial.println();
+	//*/
 
-	//delay(1000);
-	//delay(200);
+		//delay(1000);
+		//delay(200);
 
-/*
-	analogWrite(leftMotorControlPin, 75);
-	analogWrite(rightMotorControlPin, 80);
-//*/
-// ----------------------
+	/*
+		analogWrite(leftMotorControlPin, 255);
+		analogWrite(rightMotorControlPin, 255);
+	//*/
+	// ----------------------
 
-//*
-	// Controller
-	steeringController.setError(error(photoTranLeft, photoTranCenter, photoTranRight));
+	/*
+		// Controller
+		steeringController.setError(error(photoTranLeft, photoTranCenter, photoTranRight));
 
-	//Serial.println(error(photoTranLeft, photoTranCenter, photoTranRight));
+		//Serial.println(error(photoTranLeft, photoTranCenter, photoTranRight));
 
-	// Motor Control
-	int carPos;
-	if (false) {					// End of track
-		mainMotors.zeroPwm();
-		carPos = 10;				// Car is at rest
-	}
-	else {
-		//mainMotors.beginCalibMode();
-		carPos = mainMotors.convertControllerOutput(steeringController.getU());
-	}
-	mainMotors.actuate();
-
-	//Serial.println(static_cast<int>(carPos));
-/*
-	Serial.print("L:");
-	Serial.println(static_cast<int>(mainMotors.getPwm(0)));
-	Serial.print("R:");
-	Serial.println(static_cast<int>(mainMotors.getPwm(1)));
-//*/
-	//delay(1);
-/*
-	// LED Indicators
-	switch (carPos) {
-		case -1: {		// Car is off-track to the left -> red LED
-			digitalWrite(rLedPin, HIGH);
-			digitalWrite(gLedPin, LOW);
-			digitalWrite(bLedPin, LOW);
-			break;
+		// Motor Control
+		int carPos;
+		if (photoTranLeft > 400 && photoTranCenter > 400 && photoTranRight > 400 && millis() - stopTime > 9000) {					// End of track
+			mainMotors.zeroPwm();
+			carPos = 10;				// Car is at rest
 		}
-		case 0: {		// Car is centered -> green LED
+		else {
+			carPos = mainMotors.convertControllerOutput(steeringController.getU());
+		}
+		mainMotors.actuate();
+
+		//Serial.println(static_cast<int>(carPos));
+
+		// Serial.print("L:");
+		// Serial.print(static_cast<int>(mainMotors.getPwm(0)));
+		// Serial.print("\t\tR:");
+		// Serial.println(static_cast<int>(mainMotors.getPwm(1)));
+
+		delay(1);
+
+		// LED Indicators
+		switch (carPos) {
+			case -1: {		// Car is off-track to the left -> red LED
+				digitalWrite(rLedPin, HIGH);
+				digitalWrite(gLedPin, LOW);
+				digitalWrite(bLedPin, LOW);
+				break;
+			}
+			case 0: {		// Car is centered -> green LED
+				digitalWrite(rLedPin, LOW);
+				digitalWrite(gLedPin, HIGH);
+				digitalWrite(bLedPin, LOW);
+				break;
+			}
+			case 1: {		// Car is off-track to the right -> blue LED
+				digitalWrite(rLedPin, LOW);
+				digitalWrite(gLedPin, LOW);
+				digitalWrite(bLedPin, HIGH);
+				break;
+			}
+			case 10: {		// Car is at rest at the end of track -> red and blue LED
+				digitalWrite(rLedPin, HIGH);
+				digitalWrite(gLedPin, LOW);
+				digitalWrite(bLedPin, HIGH);
+
+				stop = true;
+
+				break;
+			}
+		}
+	//*/
+
+	//*
+		mainMotors.setPwm(50,50);
+		mainMotors.actuate();
+
+		// Wheel Speed Sensing System
+		if (millis() - wheelTime > wheelSpeedThreshold) {
 			digitalWrite(rLedPin, HIGH);
 			digitalWrite(gLedPin, HIGH);
 			digitalWrite(bLedPin, HIGH);
-			break;
+
+			if (millis() - LEDTime > 100) {			// 100 ms delay
+				digitalWrite(rLedPin, LOW);
+				digitalWrite(gLedPin, LOW);
+				digitalWrite(bLedPin, LOW);
+			}
+
+			if (millis() - LEDTime > 200) {			// 100 ms more delay
+				++LEDCount;
+				LEDTime = millis();
+			}
+
+			if (LEDCount >= 5) {		// After five flashes
+				mainMotors.maxLeft();
+				mainMotors.actuate();
+				if (millis() - LEDTime > 300)
+					LEDCount = 0;
+			}
 		}
-		case 1: {		// Car is off-track to the right -> blue LED
-			digitalWrite(rLedPin, LOW);
-			digitalWrite(gLedPin, LOW);
-			digitalWrite(bLedPin, HIGH);
-			break;
-		}
-		case 10: {		// Car is at rest at the end of track -> red and blue LED
-			digitalWrite(rLedPin, HIGH);
-			digitalWrite(gLedPin, LOW);
-			digitalWrite(bLedPin, HIGH);
-			break;
-		}
-	}
-*/
-	Serial.println(carPos);
-	if (carPos == -1) {		// Car is off-track to the left -> red LED
-		digitalWrite(rLedPin, HIGH);
-		digitalWrite(gLedPin, LOW);
-		digitalWrite(bLedPin, LOW);
-	}
-	else if (carPos == 0) {		// Car is centered -> green LED
-		digitalWrite(rLedPin, HIGH);
-		digitalWrite(gLedPin, HIGH);
-		digitalWrite(bLedPin, HIGH);
-	}
-	else if (carPos == 1) {		// Car is off-track to the right -> blue LED
-		digitalWrite(rLedPin, LOW);
-		digitalWrite(gLedPin, LOW);
-		digitalWrite(bLedPin, HIGH);
-	}
-	else if (carPos == 10) {		// Car is at rest at the end of track -> red and blue LED
-		digitalWrite(rLedPin, HIGH);
-		digitalWrite(gLedPin, LOW);
-		digitalWrite(bLedPin, HIGH);
-	}
 //*/
-
-/*
-	// Wheel Speed Sensing System
-	if (millis() - wheelTime > wheelSpeedThreshold) {
-		digitalWrite(rLedPin, HIGH);
-		digitalWrite(gLedPin, HIGH);
-		digitalWrite(bLedPin, HIGH);
-
-		if (millis() - LEDTime > 100) {			// 100 ms delay
-			digitalWrite(rLedPin, LOW);
-			digitalWrite(gLedPin, LOW);
-			digitalWrite(bLedPin, LOW);
-		}
-
-		if (millis() - LEDTime > 200) {			// 100 ms more delay
-			++LEDCount;
-			LEDTime = millis();
-		}
-
-		if (LEDCount == 5) {		// After five flashes
-			mainMotors.maxLeft();
-			mainMotors.actuate();
-			LEDCount = 0;
-		}
 	}
-//*/
 }
 
 

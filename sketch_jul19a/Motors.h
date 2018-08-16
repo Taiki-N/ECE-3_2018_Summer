@@ -2,12 +2,12 @@
 #define MOTORS_H
 
 constexpr unsigned char leftPwmMax = 255;		// 6V
-constexpr unsigned char rightPwmMax = 230;		// 6V
+constexpr unsigned char rightPwmMax = 255;		// 6V
 
 //constexpr unsigned char leftPwmMax = 95;		// 9V
 //constexpr unsigned char rightPwmMax = 100;		// 9V
 
-constexpr unsigned char straightCondition = 0;
+constexpr unsigned char straightCondition = 10;
 
 
 class Motors
@@ -19,8 +19,6 @@ private:
 	unsigned char leftPwm;
 	unsigned char rightPwm;
 
-	bool calibMode;
-
 public:
 	Motors(unsigned char, unsigned char, unsigned char = leftPwmMax, unsigned char = rightPwmMax);
 	unsigned char getPwm(unsigned char) const;
@@ -29,8 +27,7 @@ public:
 	void zeroPwm();
 	void maxLeft();
 	void maxRight();
-	void beginCalibMode();
-	void endCalibMode();
+	void setPwm(int, int);
 };
 
 
@@ -42,7 +39,7 @@ public:
 		- rpwm0: initial pwm for right motor
 */
 Motors::Motors(unsigned char lp, unsigned char rp, unsigned char lpwm0, unsigned char rpwm0)
-: leftPin(lp), rightPin(rp), leftPwm(lpwm0), rightPwm(rpwm0), calibMode(false)
+: leftPin(lp), rightPin(rp), leftPwm(lpwm0), rightPwm(rpwm0)
 {
 }
 
@@ -69,7 +66,7 @@ unsigned char Motors::getPwm(unsigned char side) const
 */
 int Motors::convertControllerOutput(double u)
 {
-	int ret;			// Return value
+	//int ret;			// Return value
 
 /*
 	Serial.println(u);
@@ -85,7 +82,7 @@ int Motors::convertControllerOutput(double u)
 
 		rightPwm = right;
 
-		ret = -1;
+		return -1;
 	}
 	else if (u > straightCondition) {	// Car is off-track to the right
 		rightPwm = rightPwmMax;
@@ -97,30 +94,24 @@ int Motors::convertControllerOutput(double u)
 
 		leftPwm = left;
 
-		ret = 1;
+		return 1;
 	}
 	else {				// Car is at the center
 		rightPwm = rightPwmMax;
 		leftPwm = leftPwmMax;
 
-		ret = 0;
+		return 0;
 	}
 
-	return ret;
+	//return ret;
 }
 
 /*	actuate -- Outputs set PWMs to motors through Arduino.
 */
 void Motors::actuate() const
 {
-	if (!calibMode) {
-		analogWrite(leftPin, leftPwm);			// Left motor
-		analogWrite(rightPin, rightPwm);		// Right motor
-	}
-	else {		// Calibration mode
-		analogWrite(leftPin, leftPwmMax);			// Left motor
-		analogWrite(rightPin, rightPwmMax);			// Right motor
-	}
+	analogWrite(leftPin, leftPwm);			// Left motor
+	analogWrite(rightPin, rightPwm);		// Right motor
 }
 
 /* zeroPwm -- Sets PWMs to zero, which will not be effective until actuate() is called.
@@ -140,19 +131,10 @@ void Motors::maxRight()
 	rightPwm = rightPwmMax;
 }
 
-/*	beginCalibMode -- Begins calibration mode (= PWMs are fixed to maximum to calibrate
-		appropriate maximum PWMs)
-*/
-void Motors::beginCalibMode()
+void Motors::setPwm(int lp, int rp)
 {
-	calibMode = true;
-}
-
-/* endCalibMode -- Ends calibration mode
-*/
-void Motors::endCalibMode()
-{
-	calibMode = false;
+	leftPwm = lp;
+	rightPwm = rp;
 }
 
 #endif
