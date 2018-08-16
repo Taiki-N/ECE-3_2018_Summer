@@ -4,10 +4,11 @@
 constexpr unsigned char leftPwmMax = 255;		// 6V
 constexpr unsigned char rightPwmMax = 255;		// 6V
 
-//constexpr unsigned char leftPwmMax = 95;		// 9V
-//constexpr unsigned char rightPwmMax = 100;		// 9V
+// constexpr unsigned char leftPwmMax = 145;		// 9V
+// constexpr unsigned char rightPwmMax = 140;		// 9V
 
-constexpr unsigned char straightCondition = 10;
+constexpr unsigned char straightCondition = 75;		// 6V
+// constexpr unsigned char straightCondition = 5;		// 9V
 
 
 class Motors
@@ -68,7 +69,7 @@ int Motors::convertControllerOutput(double u)
 {
 	//int ret;			// Return value
 
-/*
+//*
 	Serial.println(u);
 //*/
 

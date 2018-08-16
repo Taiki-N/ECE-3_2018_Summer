@@ -16,7 +16,7 @@ constexpr unsigned char bLedPin = 7;		// Blue
 
 constexpr unsigned char wheelSensor = 2;
 
-constexpr unsigned long wheelSpeedThreshold = 2000;		// [ms]
+constexpr unsigned long wheelSpeedThreshold = 500;		// [ms]
 
 
 double error(short, short, short);
@@ -54,9 +54,9 @@ void setup()
 	// Wheel Speed Sensors
 	pinMode(wheelSensor, INPUT);
 
-	attachInterrupt(digitalPinToInterrupt(wheelSensor), wheelSpeedISR, FALLING);
+	//attachInterrupt(digitalPinToInterrupt(wheelSensor), wheelSpeedISR, FALLING);
 
-	//Serial.begin(9600);
+	Serial.begin(9600);
 
 //*
 	digitalWrite(rLedPin, LOW);
@@ -69,7 +69,7 @@ void setup()
 
 void loop()
 {
-	if (true) {
+	if (!stop) {
 		// Sensors
 		short photoTranLeft = analogRead(photoTranPinLeft);
 		short photoTranCenter = analogRead(photoTranPinCenter);
@@ -87,16 +87,13 @@ void loop()
 		Serial.println();
 	//*/
 
-		//delay(1000);
-		//delay(200);
-
 	/*
-		analogWrite(leftMotorControlPin, 255);
-		analogWrite(rightMotorControlPin, 255);
+		analogWrite(leftMotorControlPin, 95);
+		analogWrite(rightMotorControlPin, 100);
 	//*/
 	// ----------------------
 
-	/*
+	//*
 		// Controller
 		steeringController.setError(error(photoTranLeft, photoTranCenter, photoTranRight));
 
@@ -154,8 +151,8 @@ void loop()
 		}
 	//*/
 
-	//*
-		mainMotors.setPwm(50,50);
+	/*
+		mainMotors.setPwm(80,80);
 		mainMotors.actuate();
 
 		// Wheel Speed Sensing System
@@ -178,8 +175,8 @@ void loop()
 			if (LEDCount >= 5) {		// After five flashes
 				mainMotors.maxLeft();
 				mainMotors.actuate();
-				if (millis() - LEDTime > 300)
-					LEDCount = 0;
+				delay(50);
+				LEDCount = 0;
 			}
 		}
 //*/
